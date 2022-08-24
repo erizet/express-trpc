@@ -1,6 +1,6 @@
 import * as trpc from '@trpc/server';
 
-const appRouter = trpc.router()
+export const appRouter = trpc.router()
     .query("getUser", {
         input: (val: unknown) => {
             if(typeof val === 'string') return val;

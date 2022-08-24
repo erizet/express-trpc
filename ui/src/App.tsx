@@ -1,26 +1,48 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { useState } from 'react';
 import './App.css';
+import { QueryClient, QueryClientProvider } from 'react-query';
+import { trpc } from './utils/trpc';
+import type { AppRouter } from '../../api/src/server';
+import { createTRPCClient } from '@trpc/client';
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Test av trpc
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+  // pages/index.tsx
+console.log("inne i APP");
+// const client = createTRPCClient<AppRouter>({
+//   url: 'http://localhost:4000/trpc',
+// });
+
+// const bilbo = client.query('getUser', 'id_bilbo').then(val => console.log("hämtat: " + JSON.stringify(val)));
+//console.log(bilbo);
+
+  const [queryClient] = useState(() => new QueryClient());
+  const [trpcClient] = useState(() =>
+    trpc.createClient({
+      url: 'http://localhost:4000/trpc'
+    }));
+
+    
+    
+    return (
+      <trpc.Provider client={trpcClient} queryClient={queryClient}>
+      <QueryClientProvider client={queryClient}>
+        <div className="App">
+          <header className="App-header">
+            <p>
+              Test av trpc
+            </p>
+              <Test/>
+          </header>
+        </div>
+      </QueryClientProvider>
+    </trpc.Provider>
   );
 }
 
+
+function Test() {
+  const hello = trpc.useQuery(["getUser", 'erik']);
+
+  return <div>test: {JSON.stringify(hello.data)}</div>;
+}
 export default App;
